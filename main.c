@@ -1,19 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
-#include "function.h"
 #include <math.h>
 #include <time.h>
+#include "function.h"
 
 #define MIN -1000
 #define MAX 1000
+#define MIN_SIZE 2
+#define MAX_SIZE 100
+#define MIN_EPS 1e-15
+#define MAX_EPS 1e-1
+#define ENTER 13
 
 int main() {
     srand(time(NULL));
     do {
-        int size = validInputInt("Enter size of SLAE (from 2 to 10):\n", 2, 10);
-        double eps = validInputDouble("Enter precision of calculations (from 1e-10 to 1e-3): ", 1e-10, 1e-3);
-
+        int size = validInputInt("Enter size of SLAE (from 2 to 100):\n", MIN_SIZE, MAX_SIZE);
+        double epsilon = validInputDouble("Enter precision of calculations (from 1e-15 to 1e-1):\n", MIN_EPS, MAX_EPS);
+        int precision = fabs(log10(epsilon));
         double *x = calloc(size, sizeof(double));
         double *b = calloc(size, sizeof(double));
         double *xp = calloc(size, sizeof(double));
@@ -33,84 +38,23 @@ int main() {
             getch();
             return 0;
         }
-        int choiceFilling = validInputChoice("Choose filling method (1 - manual input, 2 - random generated)\n", '1', '2');
-        double diagonalElement = 0, nonDiagonalElementSum = 0;
-        switch (choiceFilling) {
+        int choiceMatrixFilling = validInputChoice("Choose filling method (1 - manual input, 2 - random generated)\n", '1', '2'); //choiceMatrixFilling
+        switch (choiceMatrixFilling) {
             case '1':
-                for (int i = 0; i < size; i++) {
-                    diagonalElement = 0.0;
-                    do {
-                        nonDiagonalElementSum = 0.0;
-                        for (int j = 0; j < size; j++) {
-                            if (i == j) {
-                                do {
-                                    printf("Enter a%d%d (Not 0)", i + 1, j + 1);
-                                    a[i][j] = validInputDouble("[-1000; 1000]: ", MIN, MAX);
-                                } while (a[i][j] == 0);
-                            } else {
-                                printf("Enter a%d%d ", i + 1, j + 1);
-                                a[i][j] = validInputDouble("[-1000; 1000]: ", MIN, MAX);
-                            }
-                            if (i == j) {
-                                diagonalElement = fabs(a[i][j]);
-                            } else {
-                                nonDiagonalElementSum += fabs(a[i][j]);
-                            }
-                        }
-                        if (diagonalElement <= nonDiagonalElementSum) {
-                            printf("Sum of non diagonal elements must be less then diagonal element\n");
-                        }
-                    } while (diagonalElement <= nonDiagonalElementSum);
-                    printf("Enter b%d ", i + 1);
-                    b[i] = validInputDouble("[-1000; 1000]: ", MIN, MAX);
-                }
+                manualMatrixFilling(size, MIN, MAX, a, b);
                 break;
             case '2':
-                for (int i = 0; i < size; i++) {
-                    nonDiagonalElementSum = 0.0;
-                    for (int j = 0; j < size; j++) {
-                        if (i != j) {
-                            a[i][j] = random(MIN, MAX);
-                            nonDiagonalElementSum += fabs(a[i][j]);
-                        }
-                        a[i][i] = nonDiagonalElementSum + random(MIN, MAX);
-                    }
-                    b[i] = random(MIN, MAX);
-                }
+                randomMatrixFilling(size, MIN, MAX, a, b);
                 break;
             default:
                 printf("Invalid input\n");
                 break;
         }
-        double sum = 0.0, delta = 0.0, deltaMax = 0.0;
-        int iter = 0;
-        do {
-            deltaMax = 0.0;
-            for (int i = 0; i < size; i++) {
-                sum = 0.0;
-                for (int j = 0; j < size; j++) {
-                    if (i != j) {
-                        sum += a[i][j] * xp[j];
-                    }
-                }
-                x[i] = (b[i] - sum) / a[i][i];
-                delta = fabs(x[i] - xp[i]);
-            }
-            if (deltaMax < delta) {
-                deltaMax = delta;
-            }
-            for (int i = 0; i < size; i++) {
-                xp[i] = x[i];
-            }
-            iter++;
-        } while (eps < deltaMax);
-
-        print_elements(x, size);
-        printInitSlae(size, a, b);
-        printf("%d",iter);
-        getch();
+        calculateSlae(a,b,xp,x,size, epsilon);
+        printElements(x, size, precision);
+        printInitSlae(size, a, b, precision);
         freeArrays(size, x, b, xp, a);
-        printf("Press ENTER to continue, or any other key to exit.");
-    } while (getchar() == 13);
+        printf("Press ENTER to continue, or any other key to exit.\n");
+    } while (getch() == ENTER);
     return 0;
 }
