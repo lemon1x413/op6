@@ -18,7 +18,7 @@ int main() {
     do {
         int size = validInputInt("Enter size of SLAE (from 2 to 100):\n", MIN_SIZE, MAX_SIZE);
         double epsilon = validInputDouble("Enter precision of calculations (from 1e-15 to 1e-1):\n", MIN_EPS, MAX_EPS);
-        int precision = fabs(log10(epsilon));
+        unsigned precision = (unsigned) fabs(log10(epsilon));
         double *x = calloc(size, sizeof(double));
         double *b = calloc(size, sizeof(double));
         double *xp = calloc(size, sizeof(double));
@@ -38,7 +38,7 @@ int main() {
             getch();
             return 0;
         }
-        int choiceMatrixFilling = validInputChoice("Choose filling method (1 - manual input, 2 - random generated)\n", '1', '2'); //choiceMatrixFilling
+        int choiceMatrixFilling = validInputChoice("Choose filling method (1 - manual input, 2 - random generated)\n", '1', '2');
         switch (choiceMatrixFilling) {
             case '1':
                 manualMatrixFilling(size, MIN, MAX, a, b);
@@ -50,9 +50,9 @@ int main() {
                 printf("Invalid input\n");
                 break;
         }
-        calculateSlae(a,b,xp,x,size, epsilon);
+        calculateSlae(a, b, xp, x, size, epsilon);
         printElements(x, size, precision);
-        printInitSlae(size, a, b, precision);
+        printSlae(size, a, b, precision);
         freeArrays(size, x, b, xp, a);
         printf("Press ENTER to continue, or any other key to exit.\n");
     } while (getch() == ENTER);

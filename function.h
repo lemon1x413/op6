@@ -1,7 +1,7 @@
 #ifndef OP6_FUNCTION_H
 #define OP6_FUNCTION_H
 
-void freeArrays( int n,double *x ,double *b ,double *xp, double **a ) {
+void freeArrays(int n, double *x, double *b, double *xp, double **a) {
     for (int i = 0; i < n; i++) {
         free(a[i]);
     }
@@ -11,14 +11,12 @@ void freeArrays( int n,double *x ,double *b ,double *xp, double **a ) {
     free(a);
 }
 
-int validInputInt ( char *message, int min, int max ) {
+int validInputInt(char *message, int min, int max) {
     int value = 0, validInput = 0;
-    do
-    {
+    do {
         printf("%s", message);
         validInput = scanf("%d", &value);
-        if (validInput != 1 || value < min || value > max)
-        {
+        if (validInput != 1 || value < min || value > max) {
             printf("Invalid input\n");
         }
         fflush(stdin);
@@ -26,15 +24,13 @@ int validInputInt ( char *message, int min, int max ) {
     return value;
 }
 
-int validInputDouble ( char *message, double min, double max ) {
+double validInputDouble(char *message, double min, double max) {
     double value = 0;
     int validInput = 0;
-    do
-    {
+    do {
         printf("%s", message);
         validInput = scanf("%lf", &value);
-        if (validInput != 1 || value < min || value > max)
-        {
+        if (validInput != 1 || value < min || value > max) {
             printf("Invalid input\n");
         }
         fflush(stdin);
@@ -42,14 +38,12 @@ int validInputDouble ( char *message, double min, double max ) {
     return value;
 }
 
-int validInputChoice ( char *message, int choice1, int choice2 ) {
+int validInputChoice(char *message, int choice1, int choice2) {
     int value = 0;
-    do
-    {
+    do {
         printf("%s", message);
         value = getch();
-        if (value != choice1 && value != choice2)
-        {
+        if (value != choice1 && value != choice2) {
             printf("Invalid input\n");
         }
         fflush(stdin);
@@ -57,13 +51,13 @@ int validInputChoice ( char *message, int choice1, int choice2 ) {
     return value;
 }
 
-double random( double min, double max ) {
+double random(double min, double max) {
     double range = (max - min);
     double div = RAND_MAX / range;
     return min + (rand() / div);
 }
 
-void randomMatrixFilling(int size, int min, int max, double **a, double *b ) {
+void randomMatrixFilling(int size, int min, int max, double **a, double *b) {
     double nonDiagonalElementSum = 0;
     for (int i = 0; i < size; i++) {
         nonDiagonalElementSum = 0.0;
@@ -72,13 +66,13 @@ void randomMatrixFilling(int size, int min, int max, double **a, double *b ) {
                 a[i][j] = random(min, max);
                 nonDiagonalElementSum += fabs(a[i][j]);
             }
-            a[i][i] = nonDiagonalElementSum + /*fabs(random(min, max))*/1.0;
+            a[i][i] = nonDiagonalElementSum + 1.0;
         }
         b[i] = random(min, max);
     }
 }
 
-void manualMatrixFilling(int size, int min, int max, double **a, double *b ) {
+void manualMatrixFilling(int size, int min, int max, double **a, double *b) {
     double diagonalElement = 0, nonDiagonalElementSum = 0;
     for (int i = 0; i < size; i++) {
         diagonalElement = 0.0;
@@ -109,12 +103,13 @@ void manualMatrixFilling(int size, int min, int max, double **a, double *b ) {
     }
 }
 
-void calculateSlae( double **a, double *b, double *xp, double *x, int n, double epsilon ) {
+void calculateSlae(double **a, double *b, double *xp, double *x, int n, double epsilon) {
     double sum = 0.0, delta = 0.0, deltaMax = 0.0;
     do {
         deltaMax = 0.0;
         for (int i = 0; i < n; i++) {
             sum = 0.0;
+            x[i] = b[i] / a[i][i];
             for (int j = 0; j < n; j++) {
                 if (i != j) {
                     sum += a[i][j] * xp[j];
@@ -132,25 +127,23 @@ void calculateSlae( double **a, double *b, double *xp, double *x, int n, double 
     } while (epsilon < deltaMax);
 }
 
-void printInitSlae( unsigned rows, double **a, double *b, int precision ) {
+void printSlae(unsigned rows, double **a, double *b, unsigned precision) {
     printf("\nInitial SLAE: \n\n");
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < rows; j++) {
-            if(j == 0) {
-                printf(" %.*lf*x%d", precision, a[i][j], j+1);
+            if (j == 0) {
+                printf(" %.*lf*x%d", precision, a[i][j], j + 1);
             } else {
-                printf(" %+.*lf*x%d", precision, a[i][j], j+1);
+                printf(" %+.*lf*x%d", precision, a[i][j], j + 1);
             }
         }
         printf(" = %.*lf\n", precision, b[i]);
     }
 }
 
-void printElements( double *arr, int rows, int precision )
-{
-    for (int i = 0; i < rows; i++)
-    {
-        printf("x[%02d] = %.*lf\n", i+1, precision, arr[i]);
+void printElements(double *arr, int rows, unsigned precision) {
+    for (int i = 0; i < rows; i++) {
+        printf("x[%02d] = %.*lf\n", i + 1, precision, arr[i]);
     }
 }
 
